@@ -4,3 +4,5 @@
 *.pptx
 *.txt
 *.csv
+
+**/.DS_Store
