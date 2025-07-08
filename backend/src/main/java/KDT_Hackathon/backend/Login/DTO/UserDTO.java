@@ -60,4 +60,5 @@ public class UserDTO {
     @NotNull(message = "CreatedAt cannot be null")
     @Schema(description = "생성일시", example = "2025-07-08T11:00:00")
     private LocalDateTime createdAt;
+
 }

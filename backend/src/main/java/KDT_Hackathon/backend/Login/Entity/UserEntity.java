@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Builder
+@EqualsAndHashCode
 public class UserEntity
 {
     private Long userId;

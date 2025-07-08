@@ -10,11 +10,11 @@ import java.util.List;
 public interface UserMapper
 {
 
-    UserEntity selectUserById(@Param("userId") Long userId);
-    UserEntity selectUserByUserEmail(@Param("userEmail") String userEmail);
+    UserEntity selectUserByUserEmail(@Param("userEmail") String userEmail);//처리 완료
     List<UserEntity> selectAllUsers();
-    void insertUser(UserEntity user);
-    void updateUserEmail(@Param("userId") Long userId, @Param("email") String email);
+    void insertUser(UserEntity user);//처리 완료
+    void  updateUserInfo(UserEntity userEntity);//처리완료
     void deleteUser(@Param("userId") Long userId);
-
+    Long findByEmailAndPassword(@Param("userEmail") String userEmail, @Param("userPassword") String Password);
+    Boolean existsByEmail(@Param("userEmail") String userEmail);
 }
