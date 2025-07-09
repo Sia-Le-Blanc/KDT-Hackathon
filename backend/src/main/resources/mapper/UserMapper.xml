@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="KDT_Hackathon.backend.Login.Mapper.UserMapper">
+
+    <resultMap id="userResultMap" type="KDT_Hackathon.backend.Login.Entity.UserEntity">
+        <id     property="userId"    column="user_t_id"/>
+        <result property="companyId" column="company_t_id"/>
+        <result property="userName"  column="user_name"/>
+        <result property="userAge"   column="user_age"/>
+        <result property="userEmail" column="user_email"/>
+        <result property="userPassword" column="user_password"/>
+        <result property="userRole"  column="user_role"/>
+        <result property="position"  column="position"/>
+        <result property="region"    column="region"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <select id="selectUserByUserEmail" parameterType="long" resultType="UserEntity">
+        SELECT
+        user_t_id AS userId,
+        company_t_id AS companyId,
+        user_name AS userName,
+        user_age AS userAge,
+        user_email AS userEmail,
+        user_password AS userPassword,
+        user_role AS userRole,
+        position,
+        region,
+        created_at AS createdAt
+        FROM user_t
+        WHERE user_email = #{userEmail}
+    </select>
+
+    <select id="selectAllUsers" resultType="UserEntity">
+        SELECT
+        user_t_id AS userId,
+        company_t_id AS companyId,
+        user_name AS userName,
+        user_age AS userAge,
+        user_email AS userEmail,
+        user_password AS userPassword,
+        user_role AS userRole,
+        position,
+        region,
+        created_at AS createdAt
+        FROM user_t
+    </select>
+    <select id="findByEmailAndPassword" resultType="UserEntity">
+        SELECT
+        user_t_id AS userId,
+        FROM user_t WHERE user_email = #{userEmail} AND user_password = #{userPassword}
+    </select>
+    <insert id="insertUser" parameterType="UserEntity" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO user_t
+        (company_t_id, user_name, user_age, user_email, user_password, user_role, position, region, created_at)
+        VALUES
+        (#{companyId}, #{userName}, #{userAge}, #{userEmail}, #{userPassword}, #{userRole}, #{position}, #{region}, #{createdAt})
+    </insert>
+
+    <update id="updateUserInfo" parameterType="UserEntity">
+        UPDATE user_t
+        SET
+        company_t_id = #{companyId},
+        user_name = #{userName},
+        user_age = #{userAge},
+        user_password = #{userPassword},
+        user_role = #{userRole},
+        position = #{position},
+        region = #{region},
+        created_at = #{createdAt}
+        WHERE user_t_id = #{userId}
+    </update>
+
+    <delete id="deleteUser" parameterType="long">
+        DELETE FROM user_t WHERE user_t_id = #{userId}
+    </delete>
+    <select id="existsByEmail" parameterType="string" resultType="boolean">
+        SELECT
+        CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END
+        FROM user_t
+        WHERE user_email = #{userEmail}
+    </select>
+</mapper>

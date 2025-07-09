@@ -1,0 +1,24 @@
+spring:
+    application:
+        name: backend
+
+    datasource:
+        url: jdbc:mysql://localhost:3306/seoul_nojealousy?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+        username: root
+        password: 1234
+        driver-class-name: com.mysql.cj.jdbc.Driver
+
+    flyway:
+        enabled: true
+        baseline-on-migrate: true
+        locations: classpath:db/migration
+        url: jdbc:mysql://localhost:3306/seoul_nojealousy
+        user: root
+        password: 1234
+
+    mybatis:
+        config-location: classpath:sql-map-config.xml
+        type-aliases-package: com.metamate.domain.login.entity  # ???
+
+server:
+    port: 9000  

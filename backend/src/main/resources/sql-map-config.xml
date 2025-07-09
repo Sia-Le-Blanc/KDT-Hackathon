@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD MyBatis Configuration 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!-- 엔티티 패키지 별칭 자동 등록 -->
+    <typeAliases>
+        <package name="KDT_Hackathon.backend.Login.Entity"/>
+    </typeAliases>
+
+    <mappers>
+        <mapper resource="Mybatis-Mapper/UserMapper.xml"/>
+    </mappers>
+</configuration>
