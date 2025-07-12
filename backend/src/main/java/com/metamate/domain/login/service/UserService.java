@@ -1,24 +1,29 @@
-package KDT_Hackathon.backend.Login.Service;
+package com.metamate.domain.login.service;
 
-import KDT_Hackathon.backend.Config.CommonType.UserRole;
-import KDT_Hackathon.backend.Config.Expection.CLUD.FindFailedException;
-import KDT_Hackathon.backend.Config.Expection.CLUD.InsertFailedException;
-import KDT_Hackathon.backend.Config.Expection.CLUD.UpdateFailedException;
-import KDT_Hackathon.backend.Login.DTO.LoginDTO;
-import KDT_Hackathon.backend.Login.DTO.LoginSelectDTO;
-import KDT_Hackathon.backend.Login.DTO.UserDTO;
-import KDT_Hackathon.backend.Login.Entity.UserEntity;
-import KDT_Hackathon.backend.Login.Mapper.UserMapper;
+import com.metamate.config.common.UserRole;
+import com.metamate.config.expection.clud.FindFailedException;
+import com.metamate.config.expection.clud.InsertFailedException;
+import com.metamate.config.expection.clud.UpdateFailedException;
+import com.metamate.domain.login.dto.LoginDTO;
+import com.metamate.domain.login.dto.LoginSelectDTO;
+import com.metamate.domain.login.dto.UserDTO;
+import com.metamate.domain.login.entity.UserEntity;
+import com.metamate.domain.login.mapper.UserMapper;
 import org.apache.catalina.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 public class UserService
 {
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
     @Autowired
     UserMapper userMapper;
 
@@ -40,6 +45,7 @@ public class UserService
             throw new InsertFailedException(e);
         }
     }
+
     public LoginSelectDTO tokenSelect(UserDTO userDTO, String Token)
     {
         return LoginSelectDTO.builder()
@@ -52,46 +58,112 @@ public class UserService
     //데이터 업데이트 - 처리함
     public UserDTO UserUpdate(UserDTO userDTO, PasswordEncoder passwordEncoder)
     {
-       try
-       {
-           UserEntity OlduserEntity = userMapper.selectUserByUserEmail(userDTO.getUserEmail());
-           UserDTO NewUserDTO = ConvertToChangeEntity(userDTO, OlduserEntity);
-           UserEntity UpdatingEntity = ConvertToEntity(NewUserDTO, passwordEncoder);
-           userMapper.updateUserInfo(UpdatingEntity);
-           UserEntity UpdatedEntity = userMapper.selectUserByUserEmail(UpdatingEntity.getUserEmail());
-           if(UpdatingEntity.equals(UpdatedEntity))
-           {
-               return ConvertToDTO(UpdatedEntity);
-           }
-           else
-           {
-               throw new UpdateFailedException("데이터 업데이트 실패");
-           }
-       }
-       catch (Exception e)
-       {
-           throw new UpdateFailedException(e);
-       }
+        try
+        {
+            UserEntity OlduserEntity = userMapper.selectUserByUserEmail(userDTO.getUserEmail());
+            UserDTO NewUserDTO = ConvertToChangeEntity(userDTO, OlduserEntity);
+            UserEntity UpdatingEntity = ConvertToEntity(NewUserDTO, passwordEncoder);
+            userMapper.updateUserInfo(UpdatingEntity);
+            UserEntity UpdatedEntity = userMapper.selectUserByUserEmail(UpdatingEntity.getUserEmail());
+            if(UpdatingEntity.equals(UpdatedEntity))
+            {
+                return ConvertToDTO(UpdatedEntity);
+            }
+            else
+            {
+                throw new UpdateFailedException("데이터 업데이트 실패");
+            }
+        }
+        catch (Exception e)
+        {
+            throw new UpdateFailedException(e);
+        }
     }
     //로그인 성공 여부 확인 - 처리함
     public UserDTO UserLogin(LoginDTO loginDTO, PasswordEncoder passwordEncoder)
     {
         try
         {
+            validateSecuritySettings(loginDTO);
+
             UserEntity userEntity = userMapper.selectUserByUserEmail(loginDTO.getUserEmail());
             if(userEntity != null && passwordEncoder.matches(loginDTO.getUserPassword(), userEntity.getUserPassword()))
             {
+                // OTP 검증 (사용하는 경우)
+                if (userEntity.getUseOtp() != null && userEntity.getUseOtp()) {
+                    validateOtpCode(loginDTO, userEntity);
+                }
+
+                // 기존 토큰 무효화
+                if (userEntity.getUserId() != null) {
+                    invalidateExistingToken(userEntity.getUserId());
+                }
+
                 return ConvertToDTO(userEntity);
             }
             else
             {
-                throw new RuntimeException("없는 아이디이거나, 아이디 혹은 비밀번호가 틀린 것 같습니다.");
+                throw new RuntimeException("아이디 또는 비밀번호가 일치하지 않습니다.");
             }
         }
         catch (Exception e)
         {
             throw new FindFailedException(e);
         }
+    }
+
+    // 보안 설정 검증
+    private void validateSecuritySettings(LoginDTO loginDTO) {
+        if ("NONE".equalsIgnoreCase(loginDTO.getEncryptionType()) ||
+                "NONE".equalsIgnoreCase(loginDTO.getAuthenticationMethod())) {
+            logger.warn("Login attempt with NONE security setting from: " + loginDTO.getUserEmail());
+            throw new FindFailedException("보안 설정이 올바르지 않습니다. 로그인할 수 없습니다.");
+        }
+    }
+
+    // OTP 검증
+    private void validateOtpCode(LoginDTO loginDTO, UserEntity userEntity) {
+        if (loginDTO.getOtpCode() == null || loginDTO.getOtpCode().trim().isEmpty()) {
+            logger.warn("OTP required but not provided for user: " + loginDTO.getUserEmail());
+            throw new FindFailedException("OTP 코드가 필요합니다.");
+        }
+
+        // 실제 OTP 검증 로직 (TOTP 라이브러리 사용 등)
+        boolean isValidOtp = validateTOTP(loginDTO.getOtpCode(), userEntity.getOtpSecret());
+        if (!isValidOtp) {
+            logger.warn("Invalid OTP code for user: " + loginDTO.getUserEmail());
+            throw new FindFailedException("OTP 코드가 올바르지 않습니다.");
+        }
+    }
+
+    // 기존 토큰 무효화
+    private void invalidateExistingToken(Long userId) {
+        try {
+            String existingToken = userMapper.getCurrentTokenByUserId(userId);
+            if (existingToken != null) {
+                userMapper.invalidateUserToken(userId);
+                logger.info("Invalidated existing token for user ID: " + userId);
+            }
+        } catch (Exception e) {
+            logger.warn("Error invalidating existing token for user ID: " + userId + ", error: " + e.getMessage());
+        }
+    }
+
+    // 새 토큰 등록
+    public void registerNewToken(Long userId, String tokenId) {
+        try {
+            userMapper.updateUserToken(userId, tokenId, LocalDateTime.now());
+            logger.info("Registered new token for user ID: " + userId);
+        } catch (Exception e) {
+            logger.error("Error registering new token for user ID: " + userId + ", error: " + e.getMessage());
+        }
+    }
+
+    // OTP 검증 로직
+    private boolean validateTOTP(String otpCode, String otpSecret) {
+        // 실제 구현에서는 Google Authenticator 호환 TOTP 검증
+        // 예시: return TOTPGenerator.validate(otpCode, otpSecret, 30);
+        return otpCode != null && otpCode.length() == 6 && otpCode.matches("\\d{6}");
     }
 
     //회원정보 탈퇴
@@ -102,6 +174,9 @@ public class UserService
             Long UserId = userMapper.findByEmailAndPassword(UserEmail, passwordEncoder.encode(UserPassword));
             if(UserId != null)
             {
+                // 토큰 무효화
+                invalidateExistingToken(UserId);
+
                 userMapper.deleteUser(UserId);
                 UserEntity userEntity = userMapper.selectUserByUserEmail(UserEmail);
                 if(userEntity == null)

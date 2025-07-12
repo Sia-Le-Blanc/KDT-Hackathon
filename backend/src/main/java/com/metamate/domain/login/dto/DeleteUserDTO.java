@@ -1,4 +1,4 @@
-package KDT_Hackathon.backend.Login.DTO;
+package com.metamate.domain.login.dto;
 
 import lombok.*;
 

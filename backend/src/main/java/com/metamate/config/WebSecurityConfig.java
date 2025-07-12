@@ -1,4 +1,4 @@
-package KDT_Hackathon.backend.Config;
+package com.metamate.config;
 
 import KDT_Hackathon.backend.Config.Security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;

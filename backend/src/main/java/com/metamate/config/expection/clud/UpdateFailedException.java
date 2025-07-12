@@ -1,4 +1,5 @@
-package KDT_Hackathon.backend.Config.Expection.CLUD;
+package com.metamate.config.expection.clud;
+
 
 public class UpdateFailedException extends RuntimeException
 {

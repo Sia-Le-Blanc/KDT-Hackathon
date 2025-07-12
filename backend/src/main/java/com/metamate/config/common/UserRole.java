@@ -1,4 +1,4 @@
-package KDT_Hackathon.backend.Config.CommonType;
+package com.metamate.config.common;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 

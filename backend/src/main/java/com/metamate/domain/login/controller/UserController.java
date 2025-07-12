@@ -1,16 +1,18 @@
-package KDT_Hackathon.backend.Login.Controller;
+package com.metamate.domain.login.controller;
 
-import KDT_Hackathon.backend.Config.CommonType.DTO.ResponseDTO;
-import KDT_Hackathon.backend.Config.Expection.CLUD.FindFailedException;
-import KDT_Hackathon.backend.Config.Expection.CLUD.UpdateFailedException;
-import KDT_Hackathon.backend.Config.Security.TokenProvider;
-import KDT_Hackathon.backend.Login.DTO.DeleteUserDTO;
-import KDT_Hackathon.backend.Login.DTO.LoginDTO;
-import KDT_Hackathon.backend.Login.DTO.LoginSelectDTO;
-import KDT_Hackathon.backend.Login.DTO.UserDTO;
-import KDT_Hackathon.backend.Login.Service.UserService;
+import com.metamate.config.common.dto.ResponseDTO;
+import com.metamate.config.expection.clud.FindFailedException;
+import com.metamate.config.expection.clud.UpdateFailedException;
+import com.metamate.config.security.TokenProvider;
+import com.metamate.domain.login.dto.DeleteUserDTO;
+import com.metamate.domain.login.dto.LoginDTO;
+import com.metamate.domain.login.dto.LoginSelectDTO;
+import com.metamate.domain.login.dto.UserDTO;
+import com.metamate.domain.login.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,6 +27,7 @@ import java.util.Collections;
 public class UserController
 {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final ResponseDTO<UserDTO> responseDTO = new ResponseDTO<>();
 
     @Autowired
@@ -43,7 +46,7 @@ public class UserController
         try
         {
             Boolean userBool = userService.getUserID(userDTO.getUserEmail());
-            if(userBool != true)
+            if(!userBool)
             {
                 UserDTO userDTO1 = userService.UserCreate(userDTO, passwordEncoder);
                 return ResponseEntity.ok().body(responseDTO.Response("sucess", "회원가입 완료", Collections.singletonList(userDTO1)));

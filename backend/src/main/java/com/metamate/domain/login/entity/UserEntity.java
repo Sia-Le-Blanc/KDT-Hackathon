@@ -1,4 +1,4 @@
-package KDT_Hackathon.backend.Login.Entity;
+package com.metamate.domain.login.entity;
 
 import lombok.*;
 
@@ -21,4 +21,18 @@ public class UserEntity
     private String position;
     private String region;
     private LocalDateTime createdAt;
+
+    // otp관련 필드 추가
+    private Boolean useOtp;
+    private String otpSecret;
+    private Boolean allowAutoReconnect;
+
+    // 세션/토큰 관리 필드 추가
+    private String currentTokenId;
+    private LocalDateTime lastLoginAt;
+    private LocalDateTime tokenIssuedAt;
+
+    // 사용자 상태 관리 필드 추가
+    private Boolean isActive;
+    private Boolean isDeleted;
 }

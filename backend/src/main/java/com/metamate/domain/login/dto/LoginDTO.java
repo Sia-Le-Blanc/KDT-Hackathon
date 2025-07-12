@@ -1,4 +1,4 @@
-package KDT_Hackathon.backend.Login.DTO;
+package com.metamate.domain.login.dto;
 
 import lombok.*;
 
@@ -11,4 +11,12 @@ import lombok.*;
 public class LoginDTO {
     private String userEmail;
     private String userPassword;
+
+    // OTP 관련 필드 추가
+    private Boolean useOtp;
+    private String otpCode;
+
+    // 암호화, 인증방식 필드 추가
+    private String encryptionType;
+    private String authenticationMethod;
 }
