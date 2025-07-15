@@ -1,6 +1,7 @@
 package com.metamate.config.expection;
 
-import KDT_Hackathon.backend.Config.CommonType.DTO.ResponseDTO;
+
+import com.metamate.config.common.dto.ResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

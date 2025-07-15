@@ -14,6 +14,7 @@ public class JwtProperties {
     private String otherValue;
 
     public String getIssuer() {
+        return "";
     }
 }
 
