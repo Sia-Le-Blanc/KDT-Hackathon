@@ -1,0 +1,2 @@
+rootProject.name = 'metawork-mate'
+include 'backend'
