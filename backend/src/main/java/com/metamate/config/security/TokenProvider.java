@@ -1,10 +1,10 @@
-package KDT_Hackathon.backend.Config.Security;
+package com.metamate.config.security;
 
 
-import KDT_Hackathon.backend.Config.jwt.JwtProperties;
-import KDT_Hackathon.backend.Login.DTO.UserDTO;
-import KDT_Hackathon.backend.Login.Entity.UserEntity;
-import KDT_Hackathon.backend.Login.Service.UserService;
+import com.metamate.config.jwt.JwtProperties;
+import com.metamate.domain.login.dto.UserDTO;
+import com.metamate.domain.login.entity.UserEntity;
+import com.metamate.domain.login.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

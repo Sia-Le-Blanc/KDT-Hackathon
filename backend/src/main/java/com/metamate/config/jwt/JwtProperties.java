@@ -12,5 +12,8 @@ import org.springframework.stereotype.Component;
 public class JwtProperties {
     private String secretKey;
     private String otherValue;
+
+    public String getIssuer() {
+    }
 }
 

@@ -1,4 +1,4 @@
-package KDT_Hackathon.backend.Config.Swagger;
+package com.metamate.config.swagger;
 
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;

@@ -1,6 +1,6 @@
-package KDT_Hackathon.backend.Login.DTO;
+package com.metamate.domain.login.dto;
 
-import KDT_Hackathon.backend.Config.CommonType.UserRole;
+import com.metamate.config.common.UserRole;
 import jakarta.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -61,4 +61,23 @@ public class UserDTO {
     @Schema(description = "생성일시", example = "2025-07-08T11:00:00")
     private LocalDateTime createdAt;
 
+    // [1] OTP 관련 필드 추가
+    @Schema(description = "OTP 사용 여부", example = "false")
+    private Boolean useOtp;
+
+    @Schema(description = "OTP 비밀키", example = "JBSWY3DPEHPK3PXP")
+    private String otpSecret;
+
+    @Schema(description = "자동 재접속 허용 여부", example = "true")
+    private Boolean allowAutoReconnect;
+
+    // [3][4] 상태 관리 필드 추가
+    @Schema(description = "계정 활성 상태", example = "true")
+    private Boolean isActive;
+
+    @Schema(description = "삭제 상태", example = "false")
+    private Boolean isDeleted;
+
+    @Schema(description = "마지막 로그인 시간")
+    private LocalDateTime lastLoginAt;
 }

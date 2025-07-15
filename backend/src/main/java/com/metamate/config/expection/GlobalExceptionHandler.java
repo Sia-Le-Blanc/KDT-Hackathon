@@ -1,4 +1,4 @@
-package KDT_Hackathon.backend.Config.Expection;
+package com.metamate.config.expection;
 
 import KDT_Hackathon.backend.Config.CommonType.DTO.ResponseDTO;
 import org.springframework.http.HttpStatus;

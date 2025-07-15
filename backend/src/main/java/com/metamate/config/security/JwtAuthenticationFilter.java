@@ -1,4 +1,4 @@
-package KDT_Hackathon.backend.Config.Security;
+package com.metamate.config.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

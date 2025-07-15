@@ -1,4 +1,4 @@
-package KDT_Hackathon.backend.Config.CommonType.DTO;
+package com.metamate.config.common.dto;
 
 import lombok.*;
 
