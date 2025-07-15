@@ -1,6 +1,6 @@
 package com.metamate.config;
 
-import KDT_Hackathon.backend.Config.Security.JwtAuthenticationFilter;
+import com.metamate.config.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
