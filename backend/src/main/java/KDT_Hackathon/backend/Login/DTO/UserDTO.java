@@ -13,11 +13,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserDTO {
 
-    @NotNull(message = "UserId cannot be null")
     @Schema(description = "사용자 ID (PK)", example = "123")
     private Long userId;
 
-    @NotNull(message = "CompanyId cannot be null")
     @Schema(description = "회사 ID (FK)", example = "10")
     private Long companyId;
 
