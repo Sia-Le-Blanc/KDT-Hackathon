@@ -6,10 +6,11 @@
 
     <!-- 엔티티 패키지 별칭 자동 등록 -->
     <typeAliases>
-        <package name="KDT_Hackathon.backend.Login.Entity"/>
+        <package name="com.metamate.domain.login.entity"/>
     </typeAliases>
 
     <mappers>
-        <mapper resource="Mybatis-Mapper/UserMapper.xml"/>
+        <mapper resource="mapper/UserMapper.xml"/>
     </mappers>
+    
 </configuration>

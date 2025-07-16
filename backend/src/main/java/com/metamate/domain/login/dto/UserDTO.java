@@ -43,7 +43,7 @@ public class UserDTO {
     @Schema(description = "사용자 비밀번호 (해시 처리됨)", example = "Abc12345!")
     private String userPassword;
 
-    @NotBlank(message = "UserRole cannot be blank")
+    @NotNull(message = "UserRole cannot be null")
     @Schema(description = "사용자 역할", example = "admin")
     private UserRole userRole;
 
@@ -55,7 +55,6 @@ public class UserDTO {
     @Schema(description = "지역", example = "서울")
     private String region;
 
-    @NotNull(message = "CreatedAt cannot be null")
     @Schema(description = "생성일시", example = "2025-07-08T11:00:00")
     private LocalDateTime createdAt;
 

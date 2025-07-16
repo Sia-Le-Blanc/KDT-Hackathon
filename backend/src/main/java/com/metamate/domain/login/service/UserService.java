@@ -9,6 +9,7 @@ import com.metamate.domain.login.dto.LoginSelectDTO;
 import com.metamate.domain.login.dto.UserDTO;
 import com.metamate.domain.login.entity.UserEntity;
 import com.metamate.domain.login.mapper.UserMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+
+@Slf4j
 @Service
 public class UserService
 {
@@ -28,21 +31,17 @@ public class UserService
     UserMapper userMapper;
 
     //데이터 저장 - 처리함
-    public UserDTO UserCreate(UserDTO userDTO, PasswordEncoder passwordEncoder)
-    {
-        try
-        {
-            UserEntity userEntity2 = ConvertToEntity(userDTO, passwordEncoder);
-            userMapper.insertUser(userEntity2);
-            UserEntity userEntity = userMapper.selectUserByUserEmail(userEntity2.getUserEmail());
-            if(userEntity != null)
-            {
-                return ConvertToDTO(userEntity);
-            }
-            return  userDTO;
+    public UserDTO UserCreate(UserDTO userDTO, PasswordEncoder passwordEncoder) {
 
-        } catch (Exception e) {
-            throw new InsertFailedException(e);
+        UserEntity userEntity2 = ConvertToEntity(userDTO, passwordEncoder);
+        userMapper.insertUser(userEntity2);
+        UserEntity userEntity = userMapper.selectUserByUserEmail(userEntity2.getUserEmail());
+        if (userEntity != null) {
+            return ConvertToDTO(userEntity);
+        }
+        else
+        {
+            throw new InsertFailedException("데이터 삽입 도중 에러가 발생하였습니다, 저장된 User 정보를 찾을 수 없습니다.");
         }
     }
 
@@ -201,8 +200,14 @@ public class UserService
     //userID가 DB에 있는지 여부 확인
     public Boolean getUserID(String userId)
     {
-        Boolean bool = userMapper.existsByEmail(userId);
-        return bool;
+        int bool = userMapper.existsByEmail(userId);
+        if(bool > 0)
+        {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     private UserDTO ConvertToChangeEntity(UserDTO userDTO, UserEntity olduserEntity)
     {
@@ -242,19 +247,28 @@ public class UserService
         }
     }
 
-    private UserDTO ConvertToDTO(UserEntity userEntity)
-    {
+    private UserDTO ConvertToDTO(UserEntity userEntity) {
+        String roleStr = userEntity.getUserRole();
+        UserRole role;
+        try {
+            role = roleStr != null ? UserRole.valueOf(roleStr.toUpperCase()) : UserRole.ADMIN;
+        } catch (IllegalArgumentException e) {
+            // 로그 남기고 기본값 사용
+            log.warn("Unknown userRole received: {}, defaulting to ADMIN", roleStr);
+            role = UserRole.ADMIN;
+        }
+
         return UserDTO.builder()
-                .userId(null)
-                .companyId(null)
+                .userId(userEntity.getUserId())
+                .companyId(userEntity.getCompanyId())
                 .userAge(userEntity.getUserAge())
                 .userEmail(userEntity.getUserEmail())
                 .userName(userEntity.getUserName())
                 .userPassword(userEntity.getUserPassword())
                 .region(userEntity.getRegion())
                 .position(userEntity.getPosition())
-                .userRole(UserRole.valueOf(userEntity.getUserRole()))
-                .createdAt(LocalDate.now().atStartOfDay())
+                .userRole(role)
+                .createdAt(userEntity.getCreatedAt()) // 이게 맞습니다.
                 .build();
     }
 
@@ -269,7 +283,11 @@ public class UserService
                 .userPassword(passwordEncoder.encode(userDTO.getUserPassword()))
                 .region(userDTO.getRegion())
                 .position(userDTO.getPosition())
-                .userRole(String.valueOf(userDTO.getUserRole()))
+                .userRole(
+                        userDTO.getUserRole() != null
+                                ? userDTO.getUserRole().name()
+                                : String.valueOf(UserRole.ADMIN) // 기본 권한 지정
+                )
                 .createdAt(LocalDate.now().atStartOfDay())
                 .build();
     }
