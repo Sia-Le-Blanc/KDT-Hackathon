@@ -16,9 +16,13 @@ spring:
         user: root
         password: 1234
 
-    mybatis:
-        config-location: classpath:sql-map-config.xml
-        type-aliases-package: com.metamate.domain.login.entity  # ???
+mybatis:
+    mapper-locations: classpath:mapper/*.xml
+    type-aliases-package: com.metamate.domain.login.entity
 
 server:
-    port: 9000  
+    port: 9000
+
+jwt:
+    secretKey: abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+1234567890abcd
+    otherValue: something

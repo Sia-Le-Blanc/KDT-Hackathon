@@ -8,10 +8,14 @@ import com.metamate.domain.login.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -31,10 +35,14 @@ public class TokenProvider {
     public String createToken(UserDTO userDTO)
     {
         String secretKey = jwtProperties.getSecretKey();
+        log.info("JwtProperties.secretKey = {}", jwtProperties.getSecretKey());
         Date expiryDate = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
         // 기한 : 지금으로부터 1시간
         // 생성
-        return Jwts.builder().signWith(SignatureAlgorithm.HS512, jwtProperties.getSecretKey())
+        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+        SecretKey key = Keys.hmacShaKeyFor(keyBytes);
+
+        return Jwts.builder().signWith(SignatureAlgorithm.HS512, key)
                 .setSubject(userDTO.getUserEmail())
                 .setIssuer(jwtProperties.getIssuer())
                 .setIssuedAt(new Date())

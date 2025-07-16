@@ -42,6 +42,7 @@ public class UserController
     private TokenProvider tokenProvider;
 
 
+    //일반 회원 가입 정상 동작 확인
     @PostMapping
     public ResponseEntity<?> UserInsert(@RequestBody @Valid UserDTO userDTO)
     {

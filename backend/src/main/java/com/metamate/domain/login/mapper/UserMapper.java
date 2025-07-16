@@ -17,7 +17,7 @@ public interface UserMapper
     void  updateUserInfo(UserEntity userEntity);//처리완료
     void deleteUser(@Param("userId") Long userId);
     Long findByEmailAndPassword(@Param("userEmail") String userEmail, @Param("userPassword") String Password);
-    Boolean existsByEmail(@Param("userEmail") String userEmail);
+    int existsByEmail(@Param("userEmail") String userEmail);
 
     // 토큰 관리 메서드 추가
     void updateUserToken(@Param("userId") Long userId, @Param("tokenId") String tokenId, @Param("issuedAt")LocalDateTime issuedAt);
