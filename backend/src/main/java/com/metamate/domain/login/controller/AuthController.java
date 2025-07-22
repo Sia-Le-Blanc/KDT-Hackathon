@@ -71,6 +71,7 @@ public class AuthController {
         }
     }
 
+    // OAuth2를 제공하는 서버에서 반환한 토큰에서 서버에 저장할 값을 반환 받는 코드
     public String extractUserIdFrom(Map<String, Object> userInfo, String provider) {
         switch (provider.toLowerCase()) {
             case "kakao":
