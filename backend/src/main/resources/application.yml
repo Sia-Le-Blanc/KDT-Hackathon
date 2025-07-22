@@ -1,13 +1,11 @@
 spring:
     application:
         name: backend
-
     datasource:
         url: jdbc:mysql://localhost:3306/seoul_nojealousy?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
         username: root
         password: 1234
         driver-class-name: com.mysql.cj.jdbc.Driver
-
     flyway:
         enabled: true
         baseline-on-migrate: true
@@ -15,7 +13,9 @@ spring:
         url: jdbc:mysql://localhost:3306/seoul_nojealousy
         user: root
         password: 1234
-
+    config:
+        import:
+            - application-secret.yml
 mybatis:
     mapper-locations: classpath:mapper/*.xml
     type-aliases-package: com.metamate.domain.login.entity

@@ -26,13 +26,27 @@ public class WebSecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    //해당 주소 내에 있는 값에 대해서 cors 허용을 해제하는 코드
+    public static final String[] allowUrls = {
+            "/swagger-ui/**",
+            "/swagger-resources/**",
+            "/v3/api-docs/**",
+            "/api/v1/posts/**",
+            "/api/v1/replies/**",
+            "/auth/login/kakao/**",
+            "/auth/login/google/**",
+            "/auth/login/facebook/**",
+            "/auth/login/naver/**",
+            "/api/auth/**"
+    };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http.cors(Customizer.withDefaults())
                 .csrf(CsrfConfigurer::disable)
                 .sessionManagement(
                         sessionManager -> sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/","/api/auth/**").permitAll().anyRequest().authenticated());
+                .authorizeHttpRequests(authorize -> authorize.requestMatchers(allowUrls).permitAll().anyRequest().authenticated());
         //로그인, 환율, 소켓만 비로그인 시 접속 가능 나머지는 jwt 토큰 필요
         http.addFilterBefore(jwtAuthenticationFilter, CorsFilter.class);
 

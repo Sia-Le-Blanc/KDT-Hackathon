@@ -35,4 +35,8 @@ public class UserEntity
     // 사용자 상태 관리 필드 추가
     private Boolean isActive;
     private Boolean isDeleted;
+
+    // OAuth2 관련 관리 필드 추가
+    private String provider;   // "kakao", "google", "naver" 등
+    private String socialId;   // SNS 플랫폼에서 제공하는 고유 ID (email 말고 "id" 값 등)
 }

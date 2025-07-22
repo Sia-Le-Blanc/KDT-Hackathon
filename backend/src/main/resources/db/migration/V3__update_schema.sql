@@ -1,0 +1,9 @@
+ALTER TABLE user_t
+    ADD COLUMN provider VARCHAR(50) DEFAULT NULL COMMENT 'OAuth2 제공자',
+    ADD COLUMN social_id VARCHAR(100) DEFAULT NULL COMMENT 'OAuth2 고유 식별자',
+    ADD COLUMN use_otp BOOLEAN DEFAULT FALSE COMMENT 'OTP 사용 여부',
+    ADD COLUMN otp_secret VARCHAR(255) DEFAULT NULL COMMENT 'OTP 비밀 키',
+    ADD COLUMN allow_auto_reconnect BOOLEAN DEFAULT TRUE COMMENT '자동 재접속 허용 여부',
+    ADD COLUMN is_active BOOLEAN DEFAULT TRUE COMMENT '활성 상태 여부',
+    ADD COLUMN is_deleted BOOLEAN DEFAULT FALSE COMMENT '삭제 여부';
+-- 휴먼 기능

@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.UUID;
 
 
 @Slf4j
@@ -91,6 +93,14 @@ public class UserService
                 // OTP 검증 (사용하는 경우)
                 if (userEntity.getUseOtp() != null && userEntity.getUseOtp()) {
                     validateOtpCode(loginDTO, userEntity);
+                }
+
+                if (userEntity.getIsDeleted()) {
+                    throw new RuntimeException("탈퇴했거나 존재하지 않는 사용자입니다.");
+                }
+
+                if (!userEntity.getIsActive()) {
+                    throw new RuntimeException("비활성화된 사용자입니다.");
                 }
 
                 // 기존 토큰 무효화
@@ -290,5 +300,67 @@ public class UserService
                 )
                 .createdAt(LocalDate.now().atStartOfDay())
                 .build();
+    }
+
+    public UserDTO UserCreate(Map<String, Object> userInfo, String oauthType) {
+        // 1. userInfo에서 이메일, 이름 등 추출
+        String email;
+        String name;
+        String socialId;
+
+        switch(oauthType.toLowerCase())
+        {
+            case "kakao":
+                Map<String, Object> kakaoAccount = (Map<String, Object>) userInfo.get("kakao_account");
+                email = (String) kakaoAccount.get("email");
+                Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");  // 여기서 캐스팅
+                name = (String) profile.get("nickname");
+                socialId = String.valueOf(userInfo.get("id"));
+            case "naver":
+                Map<String, Object> naverResp = (Map<String, Object>) userInfo.get("response");
+                email = (String) naverResp.get("email");
+                name = (String) naverResp.get("name");
+                socialId = (String) naverResp.get("id");
+                break;
+            case "google":
+                email = (String) userInfo.get("email");
+                name = (String) userInfo.get("name");
+                socialId = (String) userInfo.get("sub");
+                break;
+            case "facebook":
+                email = (String) userInfo.get("email");
+                name = (String) userInfo.get("name");
+                socialId = (String) userInfo.get("id");
+                break;
+            default:
+                throw new IllegalArgumentException("지원하지 않는 OAuth 타입입니다.");
+        }
+
+        // 2. 기존 회원 여부 조회
+        UserEntity existingUser = userMapper.selectUserByUserEmail(email);
+        if (existingUser != null) {
+            // 이미 가입된 사용자라면 그대로 반환
+            return ConvertToDTO(existingUser);
+        }
+
+        // 3. 신규 회원 생성
+        UserEntity newUser = UserEntity.builder()
+                .userEmail(email)
+                .userName(name)
+                .provider(oauthType)
+                .socialId(socialId)
+                .userRole(String.valueOf(UserRole.ADMIN))  // 기본 권한
+                .createdAt(LocalDateTime.now())
+                .userPassword(generateRandomPassword())
+                .build();
+
+        userMapper.insertUser(newUser);
+
+        return ConvertToDTO(newUser);
+    }
+
+    private String generateRandomPassword() {
+        // 랜덤 문자열 생성 로직 (예: UUID 등)
+        return UUID.randomUUID().toString();
     }
 }

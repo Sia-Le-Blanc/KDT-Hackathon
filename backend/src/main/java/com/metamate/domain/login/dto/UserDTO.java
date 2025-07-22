@@ -1,8 +1,8 @@
 package com.metamate.domain.login.dto;
 
 import com.metamate.config.common.UserRole;
-import jakarta.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -37,9 +37,10 @@ public class UserDTO {
     @Schema(description = "사용자 이메일", example = "user@example.com")
     private String userEmail;
 
-    @NotBlank(message = "UserPassword cannot be blank")
+    // ↓ 일반 로그인 시에만 필수, 소셜은 비어있을 수 있음
     @Size(min = 8, max = 255, message = "비밀번호는 최소 8자 이상이어야 합니다.")
-    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$", message = "비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다.")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
+            message = "비밀번호는 영문, 숫자, 특수문자를 포함해야 합니다.")
     @Schema(description = "사용자 비밀번호 (해시 처리됨)", example = "Abc12345!")
     private String userPassword;
 
@@ -58,7 +59,7 @@ public class UserDTO {
     @Schema(description = "생성일시", example = "2025-07-08T11:00:00")
     private LocalDateTime createdAt;
 
-    // [1] OTP 관련 필드 추가
+    // ✅ OTP 관련
     @Schema(description = "OTP 사용 여부", example = "false")
     private Boolean useOtp;
 
@@ -68,7 +69,7 @@ public class UserDTO {
     @Schema(description = "자동 재접속 허용 여부", example = "true")
     private Boolean allowAutoReconnect;
 
-    // [3][4] 상태 관리 필드 추가
+    // ✅ 상태 관련
     @Schema(description = "계정 활성 상태", example = "true")
     private Boolean isActive;
 
@@ -77,4 +78,11 @@ public class UserDTO {
 
     @Schema(description = "마지막 로그인 시간")
     private LocalDateTime lastLoginAt;
+
+    // ✅ [OAuth2 추가 필드]
+    @Schema(description = "OAuth2 제공자 (google, kakao, naver 등)", example = "kakao")
+    private String provider;
+
+    @Schema(description = "OAuth2 사용자 고유 식별자", example = "109283472012948")
+    private String socialId;
 }
