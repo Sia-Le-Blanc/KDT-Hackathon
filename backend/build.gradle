@@ -24,28 +24,63 @@ repositories {
 	maven { url = 'https://repo.spring.io/snapshot' }
 }
 
+ext {
+	bootVer = "3.3.5"
+	jacksonVer = "2.17.2"
+}
+
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.flywaydb:flyway-core:10.15.0'  // 2025년 7월 기준 최신 버전
-	implementation 'org.flywaydb:flyway-mysql:10.15.0'
+	// [Spring Boot Starter]
+	implementation "org.springframework.boot:spring-boot-starter:$bootVer"
+	implementation "org.springframework.boot:spring-boot-starter-web:$bootVer"
+	implementation "org.springframework.boot:spring-boot-starter-log4j2:$bootVer"
+	implementation "org.springframework.boot:spring-boot-starter-security:$bootVer"
+	implementation "org.springframework.boot:spring-boot-starter-oauth2-client:$bootVer"
+	implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server:$bootVer"
+	implementation "org.springframework.boot:spring-boot-starter-validation:$bootVer"
+	implementation "org.springframework.boot:spring-boot-starter-data-redis:$bootVer"
+	implementation "org.springframework.boot:spring-boot-configuration-processor:$bootVer"
+
+	// [MyBatis]
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.4'
+
+	// [Database]
+	runtimeOnly 'org.postgresql:postgresql'
+	implementation 'mysql:mysql-connector-java:8.0.33'
+
+	// [JWT]
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+	// [Jackson]
+	implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVer}"
+	implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jacksonVer}"
+
+	// [기타]
+	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.2'
+	implementation 'org.flywaydb:flyway-core:10.15.0'
+	implementation 'org.flywaydb:flyway-mysql:10.15.0'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4'
+
+	// [Lombok]
 	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// [개발 편의]
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	// [Test]
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.4'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	implementation 'mysql:mysql-connector-java:8.0.33'
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.3'
-	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
-	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
-	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+}
+
+// 충돌 방지를 위한 설정
+configurations.configureEach {
+	exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+	exclude group: 'org.apache.logging.log4j', module: 'log4j-to-slf4j'
 }
 
 tasks.named('test') {

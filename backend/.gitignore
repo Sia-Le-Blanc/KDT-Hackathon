@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
+# 민감 정보 파일 무시 추가
+application-secret.yml
