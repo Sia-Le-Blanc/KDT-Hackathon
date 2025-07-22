@@ -20,8 +20,10 @@ public class OAuth2ServiceFactory {
             serviceMap.put(entry.getKey().toLowerCase(), entry.getValue());
         }
     }
+    // OAuth2Service Interface를 상속하는 객체를 Map에 저장
+    // 전략 패턴 + 팩토리 패턴
 
     public OAuth2Service getService(String provider) {
         return serviceMap.get(provider.toLowerCase());
-    }
+    }//어떤 Service로 넘길 것인지 선택
 }
